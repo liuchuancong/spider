@@ -16,18 +16,16 @@ from progressbar import Bar, Counter, Timer, ETA, FileTransferSpeed, ProgressBar
 from pyprobar.styleString import rgb_str
 from lxml import etree
 dir_name = 'E:/persion/python/download/'
-TROUGH_COLOR = 'blue'
-BAR_COLOR = 'green'
 cookie = '''__cfduid=d256797305602e2363ffebabbbca8a1241594915605; _ga=GA1.2.202326394.1594915637; _gid=GA1.2.830997817.1594915637; Hm_lvt_761a739b07691faaf387795b881a824f=1594573015,1594575128,1594743471,1594998827; _gat_gtag_UA_163211905_1=1'''
 headers1 = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
     'Cookie': cookie
 }
-threadNum = 300
+
 pageUrl = 'https://tu.acgbox.org/index.php/archives/'
 # 定义连续下载的写真集数目
 iteratormax = 300
-
+threadNum = 300
 
 start_index = 0  # 设置起始页面ID
 
