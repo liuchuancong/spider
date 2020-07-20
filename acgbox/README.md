@@ -17,3 +17,6 @@
 
 `folder`:文件夹名称(index = re.findall(r'\d+', str(url))[0]) 我用了数字命名自己改(其实每个页面都有title的我去掉了)
 
+### 运行
+
+`python acgbox.py`
