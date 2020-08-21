@@ -15,12 +15,12 @@ import queue
 from progressbar import Bar, Counter, Timer, ETA, FileTransferSpeed, ProgressBar
 from pyprobar.styleString import rgb_str
 from lxml import etree
-dir_name = 'E:/python/download/wallhaven/'
+dir_name = 'E:/python/download/lcoc/'
 headers1 = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
 }
 
-pageUrl = 'https://wallhaven.cc/toplist?page='
+pageUrl = 'http://www.lcoc.top/bizhi/'
 # 定义连续下载的壁纸数目
 iteratormax = 10
 threadNum = 8
@@ -94,7 +94,7 @@ def main():
         thread_list.append(t)
     for t in thread_list:
         t.start()
-    for t in thread_list:
+    for t in thread_list:0
         t.join()
 
 
