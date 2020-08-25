@@ -43,7 +43,7 @@ categoriesValues = [36, 6, 30, 9, 15, 26, 11,
 pageUrl = 'http://www.lcoc.top/bizhi/api.php?'
 # 定义连续下载的壁纸数目
 iteratormax = 10
-threadNum = 30
+threadNum = 300
 
 start_index = 0  # 设置起始页面ID
 
