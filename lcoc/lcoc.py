@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sun May 24 09:21:10 2020
-
-@author: CILENCE_AIR
-"""
 
 import requests
 import re
@@ -17,6 +12,7 @@ from pyprobar.styleString import rgb_str
 from lxml import etree
 import json
 dir_name = 'E:/python/download/lcoc/'
+dir_name = 'E:/壁纸/'
 headers1 = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
 }
@@ -86,13 +82,14 @@ class spiders(threading.Thread):
                 widgets = ['第' + str(index + 1) + '页'+'进度: ', Bar('☞'), ' ', Counter(), '/'+str(urlsLength), ' ', Timer(), ' ', ETA(), ' ', FileTransferSpeed()]
                 bar = ProgressBar(widgets=widgets, maxval=urlsLength)
                 bar.start()
-                folder = dir_name + str(categories[self.selectIndex]) + '/' + str(index + 1)
+                # folder = dir_name + str(categories[self.selectIndex]) + '/' + str(index + 1)
+                folder = dir_name
                 if not os.path.exists(folder):
                     os.makedirs(folder)
                 for i in range(urlsLength):
                     file_name = dic_data[i]['img_1600_900'].split(
                         '/')[-1]  # 提取照片格式
-                    imageUrl = 'https://image.baidu.com/search/down?tn=download&word=download&ie=utf8&fr=detail&url=http://p9.qhimg.com/bdm/2560_1600_100/' + \
+                    imageUrl = 'https://image.baidu.com/search/down?tn=download&word=download&ie=utf8&fr=detail&url=http://p9.qhimg.com/bdm/0_0_100/' + \
                         str(file_name)
                     if os.path.exists(folder + '/' + file_name):
                         continue
@@ -161,7 +158,7 @@ def main():
             print("请输入整数!")
     url_queue = queue.Queue()
     thread_list = []    # 线程列表
-    for i in range(start_index, num + 1):
+    for i in range(start_index, num):
         url = pageUrl + 'cid=' + \
             str(categoriesValues[selectIndex]) + \
             '&start=' + str(i * gap) + '&count=' + str(gap)

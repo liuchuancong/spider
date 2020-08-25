@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sun May 24 09:21:10 2020
-
-@author: CILENCE_AIR
-"""
-
 import requests
 import re
 import time
