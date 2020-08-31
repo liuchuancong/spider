@@ -13,9 +13,9 @@
 
 `iteratormax`: 网址的页码(估计只有不到300)
 
-`threadNum`: 线程数(开了3000个 8.5G图片用了10minutes)
+`threadNum`: 线程数(开了300个 8.5G图片用了10minutes)
 
-`folder`:文件夹名称(index = re.findall(r'\d+', str(url))[0]) 我用了数字命名自己改(其实每个页面都有title的我去掉了)
+`folder`:文件夹名称(index = re.findall(r'\d+', str(url))[0]) 数字
 
 ### 运行
 
