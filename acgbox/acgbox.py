@@ -9,8 +9,8 @@ import queue
 from progressbar import Bar, Counter, Timer, ETA, FileTransferSpeed, ProgressBar
 from pyprobar.styleString import rgb_str
 from lxml import etree
-dir_name = 'E:/persion/python/download/'
-cookie = '''__cfduid=d256797305602e2363ffebabbbca8a1241594915605; _ga=GA1.2.202326394.1594915637; _gid=GA1.2.830997817.1594915637; Hm_lvt_761a739b07691faaf387795b881a824f=1594573015,1594575128,1594743471,1594998827; _gat_gtag_UA_163211905_1=1'''
+dir_name = 'E:/persion/python/acgbox/'
+cookie = '''__cfduid=d4742f3e3d41e9b5474e14cfae04c1daf1598862369; _ga=GA1.2.660827661.1598862372; _gid=GA1.2.1395159592.1600999653; _gat_gtag_UA_163211905_1=1; abb76c49380724ba45b0b8adb589f243protectPassword=acgbox'''
 headers1 = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
     'Cookie': cookie
@@ -19,7 +19,7 @@ headers1 = {
 pageUrl = 'https://tu.acgbox.org/index.php/archives/'
 # 定义连续下载的写真集数目
 iteratormax = 300
-threadNum = 300
+threadNum = 1024
 
 start_index = 0  # 设置起始页面ID
 
@@ -61,11 +61,12 @@ class spiders(threading.Thread):
                 if os.path.exists(folder + '/' + titles[i]+'.' + file_name):
                     continue
                 try:
-                    responsegraph = requests.get(urls[i], headers=headers1, timeout=10)
-                    with open(folder + '/' + titles[i]+'.' + file_name, 'wb') as f:
-                            f.write(responsegraph.content)
-                            f.close()
-                            bar.update(i + 1)        
+                    responsegraph = requests.get(urls[i], headers=headers1, timeout=1000)
+                    if not responsegraph.content == b'':
+                        with open(folder + '/' + titles[i]+'.' + file_name, 'wb') as f:
+                                f.write(responsegraph.content)
+                                f.close()
+                                bar.update(i + 1)        
                 except:
                         print('超时，下载下一张图片')
                         continue
