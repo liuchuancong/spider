@@ -35,21 +35,21 @@ selectIndex = 0  # 选择的索引
 class spiders(threading.Thread):
     name = 1
 
-    def __init__(self, queue, page, selectIndex,pageNum):
+    def __init__(self, queue, page, selectIndex):
         threading.Thread.__init__(self)
         self.queue = queue
         self.page = page
         self.selectIndex = selectIndex
-        self.pageNum = pageNum
+        
     def run(self):      # 定义线程开始函数
         while not self.queue.empty():
             url = self.queue.get_nowait()
             self.request_url(url)
 
     def request_url(self, url):     # 
-        print(self.pageNum)
-        data = {"target":categoriesValues[self.selectIndex],"pageNum":self.pageNum }
-        response = requests.post(url, headers=headers1,json=data,timeout=30000)
+        query = requests.utils.urlparse(url).query
+        params = dict(x.split('=') for x in query.split('&'))
+        response = requests.post(url, headers=headers1,json=params,timeout=30000)
         html1 = etree.HTML(response.text)
         dict_str = json.loads(response.text)
         errno = dict_str["msg"]
@@ -61,7 +61,7 @@ class spiders(threading.Thread):
         urlsLength = len(dic_data)
         if not urlsLength == 0:
             # widgets = ['Progress: ', Percentage(), ' ', Bar('#'), ' ', Timer(), ' ', ETA(), ' ',FileTransferSpeed()]
-            widgets = ['第' + str(self.pageNum) + '页'+'进度: ', Bar('☞'), ' ', Counter(), '/'+str(
+            widgets = ['第' + str(params['pageNum']) + '页'+'进度: ', Bar('☞'), ' ', Counter(), '/'+str(
                 urlsLength), ' ', Timer(), ' ', ETA(), ' ', FileTransferSpeed()]
             bar = ProgressBar(widgets=widgets, maxval=urlsLength)
             bar.start()
@@ -127,7 +127,7 @@ def main():
     while True:
         try:
             category = int(input("请输入你想下载的分类："))
-            if category >= 1 and category <= 18:
+            if category >= 1 and category <= 3:
                 selectIndex = category - 1
                 break
             else:
@@ -143,10 +143,10 @@ def main():
     url_queue = queue.Queue()
     thread_list = []    # 线程列表
     for i in range(start_index, num + 1):
-        url = pageUrl
+        url = pageUrl + '?target=' + str(categoriesValues[selectIndex]) + '&pageNum=' + str(i)
         url_queue.put(url)
-        for j in range(threadNum):
-            t = spiders(url_queue, j, selectIndex,i)
+    for j in range(threadNum):
+            t = spiders(url_queue, j, selectIndex)
             thread_list.append(t)
     for t in thread_list:
         t.start()
