@@ -6,4 +6,4 @@ wallhaven [wallhaven](https://github.com/liuchuancong/spider/tree/master/wallhav
 
 蓝调API [蓝调API](https://github.com/liuchuancong/spider/tree/master/lcoc "蓝调API")
 
-极简壁纸 [蓝调API](https://github.com/liuchuancong/spider/tree/master/zzzmh "极简壁纸")
+极简壁纸 [极简壁纸](https://github.com/liuchuancong/spider/tree/master/zzzmh "极简壁纸")
