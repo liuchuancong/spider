@@ -10,7 +10,7 @@ from progressbar import Bar, Counter, Timer, ETA, FileTransferSpeed, ProgressBar
 from pyprobar.styleString import rgb_str
 from lxml import etree
 dir_name = 'E:/persion/python/acgbox/'
-cookie = '''__cfduid=d4742f3e3d41e9b5474e14cfae04c1daf1598862369; _ga=GA1.2.660827661.1598862372; _gid=GA1.2.1395159592.1600999653; _gat_gtag_UA_163211905_1=1; abb76c49380724ba45b0b8adb589f243protectPassword=acgbox'''
+cookie = '''__cfduid=d693cc9ad81424e3e5532ce45ddd52db91610071671; _ga=GA1.2.585145896.1610071699; _gid=GA1.2.1988604405.1610071699; abb76c49380724ba45b0b8adb589f243protectPassword=acgbox; _gat_gtag_UA_163211905_1=1'''
 headers1 = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
     'Cookie': cookie
@@ -18,8 +18,8 @@ headers1 = {
 
 pageUrl = 'https://tu.acgbox.org/index.php/archives/'
 # 定义连续下载的写真集数目
-iteratormax = 300
-threadNum = 1024
+iteratormax = 400
+threadNum = 10204
 
 start_index = 0  # 设置起始页面ID
 
@@ -61,7 +61,7 @@ class spiders(threading.Thread):
                 if os.path.exists(folder + '/' + titles[i]+'.' + file_name):
                     continue
                 try:
-                    responsegraph = requests.get(urls[i], headers=headers1, timeout=1000)
+                    responsegraph = requests.get(urls[i], headers=headers1, timeout=10000)
                     if not responsegraph.content == b'':
                         with open(folder + '/' + titles[i]+'.' + file_name, 'wb') as f:
                                 f.write(responsegraph.content)

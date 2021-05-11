@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
-
+from webbrowser import open as webopen
 import requests
 import re
-import time
 import os
-import time
 import threading
 import queue
-from progressbar import Bar, Counter, Timer, ETA, FileTransferSpeed, ProgressBar
-from pyprobar.styleString import rgb_str
 from lxml import etree
 import json
-# dir_name = 'E:/python/download/lcoc/'
-dir_name = 'E:/壁纸/'
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import messagebox
+dir_name = ''
+
 headers1 = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
 }
@@ -52,11 +51,13 @@ gap = 30  # 一页三十
 class spiders(threading.Thread):
     name = 1
 
-    def __init__(self, queue, page,selectIndex):
+    def __init__(self, queue, page, selectIndex,calc_count):
         threading.Thread.__init__(self)
         self.queue = queue
         self.page = page
         self.selectIndex = selectIndex
+        self.calc_count = calc_count
+
     def run(self):      # 定义线程开始函数
         while not self.queue.empty():
             url = self.queue.get_nowait()
@@ -68,9 +69,7 @@ class spiders(threading.Thread):
         dict_str = json.loads(response.text)
         errno = dict_str["errno"]
         if not errno == '0':
-            print('发生错误')
             exit(0)
-
         dic_data = dict_str["data"]
         urlsLength = len(dic_data)
         if not urlsLength == 0:
@@ -78,10 +77,6 @@ class spiders(threading.Thread):
             params = dict(x.split('=') for x in query.split('&'))
             if 'start' in params:
                 index = int(int(params['start']) / gap)
-                # widgets = ['Progress: ', Percentage(), ' ', Bar('#'), ' ', Timer(), ' ', ETA(), ' ',FileTransferSpeed()]
-                widgets = ['第' + str(index + 1) + '页'+'进度: ', Bar('☞'), ' ', Counter(), '/'+str(urlsLength), ' ', Timer(), ' ', ETA(), ' ', FileTransferSpeed()]
-                bar = ProgressBar(widgets=widgets, maxval=urlsLength)
-                bar.start()
                 # folder = dir_name + str(categories[self.selectIndex]) + '/' + str(index + 1)
                 folder = dir_name
                 if not os.path.exists(folder):
@@ -96,66 +91,157 @@ class spiders(threading.Thread):
                     try:
                         responsegraph = requests.get(
                             imageUrl, headers=headers1, timeout=20000)
-                        #有可能返回的是空  排除该图片  重新运行几次即可全部下载  这是爬取接口的问题
+                        # 有可能返回的是空  排除该图片  重新运行几次即可全部下载  这是爬取接口的问题
                         if not responsegraph.content == b'':
                             with open(folder + '/' + file_name, 'wb') as f:
                                 f.write(responsegraph.content)
                                 f.close()
-                                bar.update(i + 1)
+                            self.calc_count()
                         else:
                             try:
                                 responsegraph = requests.get(
                                     imageUrl, headers=headers1, timeout=20000)
-                                #有可能返回的是空  排除该图片  重新运行几次即可全部下载  这是爬取接口的问题
+                                # 有可能返回的是空  排除该图片  重新运行几次即可全部下载  这是爬取接口的问题
                                 if not responsegraph.content == b'':
                                     with open(folder + '/' + file_name, 'wb') as f:
                                         f.write(responsegraph.content)
                                         f.close()
-                                        bar.update(i + 1)
+                                    self.calc_count()
                                 else:
                                     try:
                                         responsegraph = requests.get(
                                             imageUrl, headers=headers1, timeout=20000)
-                                        #有可能返回的是空  排除该图片  重新运行几次即可全部下载  这是爬取接口的问题
+                                        # 有可能返回的是空  排除该图片  重新运行几次即可全部下载  这是爬取接口的问题
                                         if not responsegraph.content == b'':
                                             with open(folder + '/' + file_name, 'wb') as f:
                                                 f.write(responsegraph.content)
                                                 f.close()
-                                                bar.update(i + 1)
+                                            self.calc_count()
                                     except:
-                                        print('打开' + imageUrl + '失败')
                                         continue
                             except:
-                                print('打开' + imageUrl + '失败')
                                 continue
                     except:
-                        print('打开' + imageUrl + '失败')
                         continue
-                    bar.finish()
 # 创建多线程函数
 
 
-def main():
-    categoriesStr = ''  # 分类字符
-    for i in range(len(categories)):
-        categoriesStr += str(i+1)+' ' + categories[i] + '\n'
-    print(categoriesStr)
-    while True:
-        try:
-            category = int(input("请输入你想下载的分类："))
-            if category >= 1 and category <= 18:
-                selectIndex = category - 1
-                break
+class MY_GUI():
+    def __init__(self, init_window_name):
+        self.init_window_name = init_window_name
+    #设置窗口
+    def set_init_window(self):
+        self.init_window_name.title("壁纸下载")
+        self.init_window_name.geometry('500x500')
+
+        #链接
+        self.text_link_label=tk.Label(self.init_window_name,width=10, text="电脑壁纸:")
+        self.text_link_label.place(x=10, y=10)
+
+        self.text_link=tk.Label(self.init_window_name, text="http://www.lcoc.top/bizhi",fg = "#1989fa")
+        self.text_link.bind('<Button-1>', lambda x: webopen('http://www.lcoc.top/bizhi',2))
+        self.text_link.place(x=80, y=10)
+        
+        #按钮
+        self.directory_button_label= tk.StringVar()
+        self.directory_button_label.set("") 
+        
+        self.directory_button = tk.Button(self.init_window_name, text="选择下载目录", bg="#1989fa",fg="#fff", width=10,command=self.getDownLoadDirectory)  # 调用内部方法  加()为直接调用
+        self.directory_button.place(x=20, y=40)
+
+        #标签
+        self.result_directory_name_label = tk.Label(self.init_window_name, textvariable=self.directory_button_label,font=('microsoft yahei',10))
+        self.result_directory_name_label.bind('<Button-1>', lambda x: self.open_directory())
+        self.result_directory_name_label.place(x=120, y=42)
+
+        # 指定Radiobutton的事件处理函数
+
+        self.radio_value = tk.IntVar()
+        self.radio_value.set(0)
+        self.getLoopRadio()
+        #页数
+
+                
+        entry_input_Label = tk.Label(self.init_window_name, text='请输入下载页数：')
+        entry_input_Label.place(x=20, y=300)
+
+        self.pageNum = tk.StringVar()   # 这即是输入框中的内容
+        self.pageNum.set(1)
+        self.entry_input = tk.Entry(self.init_window_name, textvariable= self.pageNum,width=10)  # 设置"文本变量"为var
+        self.entry_input.place(x=120, y=302)
+
+        
+        #按钮
+        self.directory_button = tk.Button(self.init_window_name, text="下载", bg="#1989fa",fg="#fff", width=8,command=self.down_file)  # 调用内部方法  加()为直接调用
+        self.directory_button.place(x=200, y=298)
+
+        #页数
+
+                
+        down_count_Label = tk.Label(self.init_window_name, text='已下载：')
+        down_count_Label.place(x=20, y=340)
+
+        self.down_count = tk.IntVar()   # 这即是输入框中的内容
+        self.down_count.set(0)
+        self.down_count_label = tk.Label(self.init_window_name, textvariable= self.down_count,width=10)  # 设置"文本变量"为var
+        self.down_count_label.place(x=120, y=340)
+
+        
+        self.directory_button = tk.Label(self.init_window_name, text="张")  # 调用内部方法  加()为直接调用
+        self.directory_button.place(x=200, y=340)
+    #功能函数
+
+    def calc_count(self):
+        count = self.down_count.get()
+        count = count + 1
+        self.down_count.set(count)
+    def open_directory(self):
+        if not dir_name == '':
+            os.startfile(dir_name)
+    def getDownLoadDirectory(self):
+        '''打开选择文件夹对话框'''
+        global dir_name
+        dir_name = filedialog.askdirectory()  # 获得选择好的文件夹
+        if dir_name == '':
+            result =  messagebox.showwarning('警告','请先选择下载目录')
+        else:
+            self.directory_button_label.set(dir_name)
+
+    def getLoopRadio(self):
+        for i in range(len(categories)):
+            rb_function_Label = tk.Label(self.init_window_name, text=str(i + 1) + '.',anchor='se')
+            rb_function = tk.Radiobutton(self.init_window_name, variable= self.radio_value,  text=categories[i], value = i)
+            if i % 2 == 0:
+                rb_function_Label.place(x=80, y=72 + 10 * (i + 1))
+                rb_function.place(x=100, y=72 + 10 * (i + 1))
             else:
-                print('请输入1-18的整数')
-        except:
-            print("请输入整数!")
-    while True:
-        try:
-            num = int(input("请输入你想下载的页数："))
-            break
-        except:
-            print("请输入整数!")
+                rb_function_Label.place(x=80 + 100, y=72 + 10 * i)
+                rb_function.place(x=100 +  100, y=72 + 10 * i)
+
+    def down_file(self):
+        self.down_count.set(0)
+        if dir_name == '':
+            messagebox.showwarning('警告','请先选择下载目录')
+        else:
+            try:
+                num = int(self.pageNum.get())
+                down_load(self.radio_value.get(),num,self.calc_count)
+            except:
+                messagebox.showwarning('警告','下载页数大于0')
+
+def main():
+    gui_start()
+
+
+
+def gui_start():
+    init_window  = tk.Tk()
+    ZMJ_PORTAL = MY_GUI(init_window)
+    # 设置根窗口默认属性
+    ZMJ_PORTAL.set_init_window()
+    init_window.mainloop()  # 父窗口进入事件循环，可以理解为保持窗口运行，否则界面不展示
+
+def down_load(selectIndex,num,calc_count):
     url_queue = queue.Queue()
     thread_list = []    # 线程列表
     for i in range(start_index, num):
@@ -164,15 +250,11 @@ def main():
             '&start=' + str(i * gap) + '&count=' + str(gap)
         url_queue.put(url)
     for i in range(threadNum):
-        t = spiders(url_queue, i,selectIndex)
+        t = spiders(url_queue, i, selectIndex,calc_count)
         thread_list.append(t)
     for t in thread_list:
+        t.setDaemon(True) 
         t.start()
-    for t in thread_list:
-        t.join()
-
 
 if __name__ == '__main__':
-    start_time = time.time()
     main()
-    print(str(threadNum) + "线程用时：%f" % (time.time() - start_time))
